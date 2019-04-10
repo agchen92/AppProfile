@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 '''
@@ -33,7 +33,7 @@ googleplay_header = googleplay[0]
 googleplay = googleplay[1:]
 
 
-# In[3]:
+# In[2]:
 
 
 #To make the data easier to explore. Let's create a function
@@ -51,7 +51,7 @@ def explore_data(dataset, start, end, rows_and_columns=False):
         print('Number of columns:', len(dataset[0]))
 
 
-# In[4]:
+# In[3]:
 
 
 #Explore App Store data.
@@ -63,7 +63,7 @@ explore_data(ios, 0, 3, True)
 #'price', 'rating_count_tot', 'rating_count_ver', 'user_rating', and 'prime_genre'.'
 
 
-# In[5]:
+# In[4]:
 
 
 #Explore Google Play data.
@@ -76,7 +76,7 @@ explore_data(googleplay, 0, 3, True)
 #and "Genres".
 
 
-# In[8]:
+# In[5]:
 
 
 #Now that we have explored some of the data inside this dataset
@@ -93,7 +93,7 @@ print(googleplay[10472])  # incorrect row
 del googleplay[10472]
 
 
-# In[9]:
+# In[6]:
 
 
 #I will go ahead and perform more data cleaning on this dataset by
@@ -105,7 +105,7 @@ for app in googleplay:
         print(app)
 
 
-# In[10]:
+# In[7]:
 
 
 duplicate_apps = []
@@ -123,7 +123,7 @@ print('\n')
 print('Examples of duplicate apps:', duplicate_apps[:15])
 
 
-# In[12]:
+# In[8]:
 
 
 reviews_max = {}
@@ -142,7 +142,7 @@ print('Expected length:', len(googleplay) - 1181)
 print('Actual length:', len(reviews_max))
 
 
-# In[15]:
+# In[9]:
 
 
 googleplay_clean = []
@@ -157,6 +157,93 @@ for app in googleplay:
         already_added.append(name)
         
 explore_data(googleplay_clean, 0, 3, True)
+
+
+# In[10]:
+
+
+#Now that I have cleaned the data somewhat, I also want to remove the apps
+#that are free. Because as I have mentioned in the introduction, I want to
+#gain insights on what paid apps are most popular in the market.
+
+android_final = []
+ios_final = []
+
+for app in googleplay_clean:
+    price = app[7]
+    if price == '0':
+        android_final.append(app)
+        
+for app in ios:
+    price = app[4]
+    if price == '0.0':
+        ios_final.append(app)
+
+
+# In[11]:
+
+
+#Let's build a frequency table that show percentages on what genre is most popular.
+#Let's also sort these percentages by descending order.
+
+def freq_table(dataset, index):
+    table = {}
+    total = 0
+    
+    for row in dataset:
+        total += 1
+        value = row[index]
+        if value in table:
+            table[value] += 1
+        else:
+            table[value] = 1
+    
+    table_percentages = {}
+    for key in table:
+        percentage = (table[key] / total) * 100
+        table_percentages[key] = percentage 
+    
+    return table_percentages
+
+
+def display_table(dataset, index):
+    table = freq_table(dataset, index)
+    table_display = []
+    for key in table:
+        key_val_as_tuple = (table[key], key)
+        table_display.append(key_val_as_tuple)
+        
+    table_sorted = sorted(table_display, reverse = True)
+    for entry in table_sorted:
+        print(entry[1], ':', entry[0])
+
+
+# In[13]:
+
+
+display_table(ios_final, -5)
+
+#As we can see, more than half the popular apps are games. Entertainment apps
+#are second most popular followed by Photo and Video, and then Social Networking.
+#The general takeaway that we can see is that, most of the apps are designed for fun
+#and is also the most popular. The second type of most popular apps are designed
+#for practical use and productivity.
+
+
+# In[15]:
+
+
+display_table(android_final, 1)
+
+#For Android apps, this is completely different. More apps are designed for
+#Family, Tools, and Business. Games do represent a good portion of apps on
+#GooglePlay but is more even distributed compared to iOS App Store.
+
+
+# In[17]:
+
+
+display_table(android_final, -4)
 
 
 # In[ ]:
